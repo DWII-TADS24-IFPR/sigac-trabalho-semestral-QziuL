@@ -13,16 +13,16 @@ class UserSeeder extends Seeder
         $data = [
             [
                 // ADMINISTRADOR
-                "name" => "LUIZ FERNANDO QUINHOLI",
-                "email" => "luiz@gmail.com",
+                "name" => "LUIZ ADMIN",
+                "email" => "luiz.admin@gmail.com",
                 "password" => bcrypt('123admin123'),
                 "is_admin" => true,
             ],
             [
                 // ALUNO
-                "name" => "TESTE",
-                "email" => "teste@gmail.com",
-                "password" => bcrypt('123teste123'),
+                "name" => "LUIZ ALUNO",
+                "email" => "luiz.aluno@gmail.com",
+                "password" => bcrypt('123luiz123'),
                 "is_admin" => false,
             ],
         ];
