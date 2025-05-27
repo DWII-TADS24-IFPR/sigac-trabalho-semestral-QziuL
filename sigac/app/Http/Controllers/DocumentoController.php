@@ -3,116 +3,115 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documento;
+use App\Models\User;
 use App\Repositories\AlunoRepository;
 use App\Repositories\CategoriaRepository;
 use App\Repositories\DocumentoRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class DocumentoController extends Controller
 {
     private DocumentoRepository $repository;
     private CategoriaRepository $categoriaRepository;
-    private AlunoRepository $alunoRepository;
-
+    private string $path = 'documentos/alunos';
     private array $regrasValidacao = [
-        'url'           => 'required|string',
-        'descricao'     => 'required|string',
-        'horas_in'      => 'required|float',
-        'horas_out'     => 'required|float',
-        'status'        => 'required|string',
-        'comentario'    => 'required|string',
-        'categoria_id'  => 'required|integer',
-        'aluno_id'      => 'required|integer',
+        'descricao' => 'required|min:5|max:200',
+        'horas_in' => 'required',
+        'categoria_id' => 'required',
+        'documento' => 'required|file|mimes:pdf|max:2048',
     ];
 
     private array $mensagemErro = [
-        'url.required'          => 'O campo hash é obrigatório.',
-        'descricao.required'    => 'O campo data é obrigatório.',
-        'horas_in.required'     => 'O campo aluno_id é obrigatório.',
-        'horas_out.required'    => 'O campo comprovante_id é obrigatório.',
-        'status.required'       => 'O campo status é obrigatório.',
-        'comentario.required'   => 'O campo comentario é obrigatório.',
-        'categoria_id.required' => 'O campo categoria_id é obrigatório.',
-        'aluno_id.required'     => 'O campo aluno_id é obrigatório.',
+        'descricao.required'    => 'O campo descrição é obrigatório.',
+        'horas_in.required'     => 'O campo horas é obrigatório.',
+        'categoria_id.required' => 'O campo categoria é obrigatório.',
+        'documento.required'     => 'O campo documento é obrigatório.',
     ];
 
     public function __construct()
     {
         $this->repository = new DocumentoRepository();
         $this->categoriaRepository = new CategoriaRepository();
-        $this->alunoRepository = new AlunoRepository();
     }
 
 
     public function index(): View
     {
         $documentos = $this->repository->selectAll();
-        return view('documento.index');
+        return view('documento.index', compact('documentos'));
     }
 
    public function create(): View
     {
-        $documentos = $this->repository->selectAll();
-        $alunos     = $this->alunoRepository->selectAll();
         $categorias = $this->categoriaRepository->selectAll();
-
-        return view('documento.create', compact('documentos', 'alunos', 'categorias'));
+        return view('documento.create', compact( 'categorias'));
     }
 
-    public function store(Request $request): View
+    public function store(Request $request): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
-        $documento = new Documento();
-//        $documento->fill($request->all());
-        $documento->setUrl($request->get('url'));
-        $documento->setDescricao($request->get('descricao'));
-        $documento->setHorasIn($request->get('horas_in'));
-        $documento->setHorasOut($request->get('horas_out'));
-        $documento->setStatus($request->get('status'));
-        $documento->setComentario($request->get('comentario'));
-        $documento->setCategoriaId($request->get('categoria_id'));
-        $documento->setUserId($request->get('aluno_id'));
-        $documento->save();
+        $categoria = $this->categoriaRepository->findById($request->get('categoria_id'));
+        $user = User::find(Auth::id());
+        if($request->file('documento') && isset($categoria) && isset($user)) {
+            // Registra a Solicitação
+            $documento = new Documento();
+            $documento->setDescricao(mb_strtoupper($request->get('descricao'), 'UTF-8'));
+            $documento->setHorasIn($request->get('horas_in'));
+            $documento->setStatus(false);
+            $documento->categoria()->associate($categoria);
+            $documento->user()->associate($user);
+            $id = $this->repository->saveAndReturnId($documento);
+            // Upload documento salvando em 'storage/app/private/public/documentos/alunos'
+            // altera nome do arquivo com ID do aluno e horario
+            $extensao_arq = $request->file('documento')->getClientOriginalExtension();
+            $nome_arq = $id.'_'.time().'.'.$extensao_arq;
+            $path = $request->file('documento')->storeAs('public/documentos/alunos', $nome_arq);
+            $documento->setUrl($path);
+            $this->repository->save($documento);
+            return redirect()->route('documento.index');
+        }
 
-        return view('documento.index')->with('sucess', 'Documento criado com sucesso.');
+        return redirect()->route('documento.index');
     }
 
-    public function show(string $id): View
+    public function show(string $id): View | RedirectResponse
     {
         $documento = $this->repository->findById($id);
 
         return ($documento)
             ? view('documento.show', compact('documento'))
-            : view('documento.index')->with('error', 'Documento não encontrado.');
+            : redirect()->route('documento.index')->with('error', 'Documento não encontrado.');
     }
 
-    public function edit(string $id): View
+    public function edit(string $id): View | RedirectResponse
     {
-        $documento = $this->repository->findById($id);
-
-        return ($documento)
-            ? view('documento.edit', compact('documento'))
-            : view('documento.index')->with('error', 'Documento não encontrado.');
+        $documento = $this->repository->findById(intval($id));
+        $categorias = $this->categoriaRepository->selectAll();
+        return (isset($documento))
+            ? view('documento.edit', compact('documento', 'categorias'))
+            : redirect()->route('documento.index')->with('error', 'Documento não encontrado.');
     }
 
-    public function update(Request $request, string $id): View
+    public function update(Request $request, string $id): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
         $documento = $this->repository->findById($id);
         if (!$documento)
-            return view('documento.index')->with('error', 'Documento não encontrado.');
+            return redirect()->route('documento.index')->with('error', 'Documento não encontrado.');
         $documento->update($request->all());
 
-        return view('documento.index')->with('sucess', 'Documento atualizado com sucesso.');
+        return redirect()->route('documento.index')->with('sucess', 'Documento atualizado com sucesso.');
     }
 
-    public function destroy(string $id): View
+    public function destroy(string $id): RedirectResponse
     {
         return ($this->repository->delete($id))
-            ? view('documento.index')->with('sucess', 'Documento removido com sucesso.')
-            : view('documento.index')->with('error', 'Falha ao deletar o documento.');
+            ? redirect()->route('documento.index')->with('sucess', 'Documento removido com sucesso.')
+            : redirect()->route('documento.index')->with('error', 'Falha ao deletar o documento.');
     }
 }
