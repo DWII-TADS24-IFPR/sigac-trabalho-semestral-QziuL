@@ -7,10 +7,9 @@ use App\Models\User;
 use App\Repositories\AlunoRepository;
 use App\Repositories\CursoRepository;
 use App\Repositories\TurmaRepository;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use function PHPUnit\Framework\isEmpty;
 
 class AlunoController extends Controller
 {
@@ -18,19 +17,19 @@ class AlunoController extends Controller
     private CursoRepository $cursoRepository;
     private TurmaRepository $turmaRepository;
     private array $regrasValidacao = [
-        'nome'      => 'required|min:4|max:255',
-        'email'     => 'required|email|max:255',
-        'cpf'       => 'required|min:11|max:11',
-        'senha'     => 'min:6|max:100',
+        'name'      => 'required|string|min:4|max:255',
+        'email'     => 'required|string|email|max:255|unique:users|unique:alunos',
+        'cpf'       => 'required|string|min:11|max:11|unique:alunos',
+        'password'  => 'min:6|string|max:255|confirmed',
         'turma'     => 'required',
         'curso'     => 'required',
     ];
 
     private array $mensagemErro = [
-        'nome.required' => 'O campo nome é obrigatório.',
+        'name.required' => 'O campo nome é obrigatório.',
         'email.required' => 'O campo email é obrigatório.',
         'cpf.required' => 'O campo cpf é obrigatório.',
-        'senha.required' => 'O campo senha é obrigatório',
+        'password.required' => 'O campo senha é obrigatório',
     ];
 
     public function __construct()
@@ -51,23 +50,33 @@ class AlunoController extends Controller
     {
         $cursos = $this->cursoRepository->selectAll();
         $turmas = $this->turmaRepository->selectAll();
-        return view('aluno.create', compact('cursos', 'turmas'));
+        return view('auth.register', compact('cursos', 'turmas'));
     }
 
     public function store(Request $request)
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
+        $user = User::create([
+            'name' => mb_strtoupper($request->get('name'), 'UTF-8'),
+            'email' => $request->get('email'),
+            'password' => bcrypt($request->get('password')),
+        ]);
+
         $aluno = new Aluno();
-        $aluno->setNome(mb_strtoupper($request->get('nome'), 'UTF-8'));
-        $aluno->setEmail($request->get('email'));
+        $aluno->setNome($user->name);
+        $aluno->setEmail($user->email);
         $aluno->setCpf($request->get('cpf'));
-        $aluno->setSenha(bcrypt($request->get('senha')));
+        $aluno->setSenha(bcrypt($request->get('password')));
         $aluno->setTurmaId(intval($request->get('turma')));
         $aluno->setCursoId(intval($request->get('curso')));
+        $aluno->setUserId($user->id);
         $this->repository->save($aluno);
 
-        return redirect()->route('aluno.index')->with(['success' => 'Aluno cadastrado com sucesso!']);
+        Auth::login($user);
+
+        return redirect(route('dashboard', absolute: false));
+        //return redirect()->route('aluno.index')->with(['success' => 'Aluno cadastrado com sucesso!']);
     }
 
     public function show(string $id)
@@ -100,7 +109,6 @@ class AlunoController extends Controller
             $aluno->setCursoId(intval($request->get('curso')));
             $aluno->setTurmaId(intval($request->get('turma')));
             $aluno->update();
-//            $aluno->update($request->all());
             return redirect()->route('aluno.index')->with('success', 'Aluno atualizado com sucesso!');
         }
         return view('aluno.index')->with('error', 'Aluno inexistente.');
