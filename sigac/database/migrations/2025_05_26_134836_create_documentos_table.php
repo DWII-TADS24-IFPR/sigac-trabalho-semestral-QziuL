@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->string('descricao');
             $table->float('horas_in');
-            $table->string('status');
-            $table->string('comentario');
-            $table->float('horas_out');
+            $table->string('status')->default('Pendente');
+            $table->string('comentario')->nullable();
+            $table->float('horas_out')->default(0);
             $table->unsignedBigInteger('categoria_id');
             $table->unsignedBigInteger('user_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
