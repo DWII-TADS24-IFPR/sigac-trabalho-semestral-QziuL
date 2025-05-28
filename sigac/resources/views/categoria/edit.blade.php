@@ -25,6 +25,7 @@
                       onsubmit="return confirm('Tem certeza que deseja editar?');">
                     @csrf
                     @method('put')
+
                     <div class="mb-3">
                         <label class="form-label" for="nome">Nome:</label>
                         <input class="form-control" type="text" name="nome" value="{{ $categoria->nome }}" required>
