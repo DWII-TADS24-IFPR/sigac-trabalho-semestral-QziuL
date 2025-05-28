@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+
     <title>@yield('title', 'Dashboard - SIGAC Admin')</title>
+
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
@@ -52,10 +54,11 @@
         @if(auth()->user()->is_admin)
             <a href="{{route('aluno.index')}}">Aluno</a>
             <a href="{{ route('categoria.index') }}">Categorias</a>
-            <a href="#">Cursos</a>
-            <a href="#">Niveis</a>
-            <a href="#">Turmas</a>
-            <a href="#">Comprovantes</a>
+            <a href="{{ route('curso.index') }}">Cursos</a>
+            <a href="{{ route('nivel.index') }}">Niveis</a>
+            <a href="{{ route('turma.index') }}">Turmas</a>
+            <a href="{{ route('comprovante.index') }}">Comprovantes</a>
+            <a href="{{ route('solicitacao.index') }}">Solicitações</a>
         @endif
         @if(!auth()->user()->is_admin)
             <a href="{{ route('documento.index') }}">Horas Complementares</a>
