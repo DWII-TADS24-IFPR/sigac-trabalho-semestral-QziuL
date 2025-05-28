@@ -8,6 +8,7 @@ use App\Http\Controllers\DeclaracaoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SolicitacaoHorasController;
 use App\Http\Controllers\TurmaController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +34,6 @@ Route::resource('declaracao', DeclaracaoController::class);
 Route::resource('documento', DocumentoController::class);
 Route::resource('nivel', NivelController::class);
 Route::resource('turma', TurmaController::class);
+Route::resource('solicitacao', SolicitacaoHorasController::class);
 
 require __DIR__.'/auth.php';
