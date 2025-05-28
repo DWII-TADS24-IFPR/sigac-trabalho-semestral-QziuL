@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Turma;
 use App\Repositories\CursoRepository;
 use App\Repositories\TurmaRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -41,48 +42,49 @@ class TurmaController extends Controller
         return view('turma.create', compact('cursos'));
     }
 
-    public function store(Request $request): View
+    public function store(Request $request): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
         $turma = new Turma();
         $turma->setAno($request->get('ano'));
-        $turma->setCursoId($request->get('curso_id'));
+        $turma->setCursoId(intval($request->get('curso_id')));
         $turma->save();
 
-        return view('turma.index', compact('turma'))->with('sucess', 'Turma criada com sucesso.');
+        return redirect()->route('turma.index')->with('sucess', 'Turma criada com sucesso.');
     }
 
-    public function show(string $id): View
+    public function show(string $id): View | RedirectResponse
     {
         $turma = $this->repository->findById($id);
         return ($turma)
             ? view('turma.show', compact('turma'))
-            : view('turma.index')->with('error', 'Turma não encontrada.');
+            : redirect()->route('turma.index')->with('error', 'Turma não encontrada.');
     }
 
     public function edit(string $id)
     {
         $turma = $this->repository->findById($id);
+        $cursos = $this->cursoRepository->selectAll();
         return ($turma)
-            ? view('turma.edit', compact('turma'))
+            ? view('turma.edit', compact('turma', 'cursos'))
             : view('turma.index')->with('error', 'Turma não encontrada.');
     }
 
-    public function update(Request $request, string $id): View
+    public function update(Request $request, string $id): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
         $turma = $this->repository->findById($id);
         $turma->update($request->all());
 
-        return view('turma.index')->with('sucesso', 'Turma editada com sucesso.');
+        return redirect()->route('turma.index')->with('sucesso', 'Turma editada com sucesso.');
     }
 
-    public function destroy(string $id): View
+    public function destroy(string $id): RedirectResponse
     {
         return ($this->repository->delete($id))
-            ? view('turma.index')->with('sucess', 'Turma deletada com sucesso.')
-            : view('turma.index')->with('error', 'Falha ao deletar turma.');
+            ? redirect()->route('turma.index')->with('sucess', 'Turma deletada com sucesso.')
+            : redirect()->route('turma.index')->with('error', 'Falha ao deletar turma.');
     }
 }
