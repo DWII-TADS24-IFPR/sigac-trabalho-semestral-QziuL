@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DeclaracaoRepository;
 use App\Models\Declaracao;
 use App\Repositories\AlunoRepository;
 use App\Repositories\ComprovanteRepository;
+use App\Repositories\DeclaracaoRepository;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -39,7 +39,8 @@ class DeclaracaoController extends Controller
 
     public function index(): View
     {
-        return view('declaracao.index');
+        $declaracoes = $this->repository->selectAll();
+        return view('declaracao.index', compact('declaracoes'));
     }
 
     public function create(): View
