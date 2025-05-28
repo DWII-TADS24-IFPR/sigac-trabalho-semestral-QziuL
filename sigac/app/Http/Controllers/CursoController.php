@@ -42,7 +42,7 @@ class CursoController extends Controller
     public function index(): View
     {
         $cursos = $this->cursoRepository->selectAll();
-        return view('cursos.index', compact('cursos'));
+        return view('curso.index', compact('cursos'));
     }
 
     public function create(): View
@@ -53,10 +53,10 @@ class CursoController extends Controller
         */
         $niveis = $this->nivelRepository->selectAll();
         $eixos = $this->eixoRepository->selectAll();
-        return view('cursos.create', compact('niveis', 'eixos'));
+        return view('curso.create', compact('niveis', 'eixos'));
     }
 
-    public function store(Request $request): View
+    public function store(Request $request): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
@@ -64,17 +64,16 @@ class CursoController extends Controller
         $curso->setNome(mb_strtoupper($request->get('nome')));
         $curso->setSigla(mb_strtoupper($request->get('sigla')));
         $curso->setTotalHoras($request->get('total_horas'));
-        $curso->setNivelId($request->get('nivel_id'));
-        $curso->setEixoId($request->get('eixo_id'));
+        $curso->setNivelId(intval($request->get('nivel_id')));
+        $curso->setEixoId(intval($request->get('eixo_id')));
         $curso->save();
 
-        return view('curso.create')->with('sucess', 'Curso cadastrado com sucesso!');
+        return redirect()->route('curso.index')->with('sucess', 'Curso cadastrado com sucesso!');
     }
 
     public function show(string $id): View | RedirectResponse
     {
         $curso = $this->find($id);
-
         return (isset($curso))
             ? view('curso.show', compact('curso'))
             : redirect()->back()->with('error', 'Curso não encontrado.');
@@ -83,29 +82,30 @@ class CursoController extends Controller
     public function edit(string $id): View | RedirectResponse
     {
         $curso = $this->find($id);
-
+        $niveis = $this->nivelRepository->selectAll();
+        $eixos = $this->eixoRepository->selectAll();
         return (isset($curso))
-            ? view('curso.edit', compact('curso'))
-            : redirect()->back()->with('error', 'Curso não encontrado');
+            ? view('curso.edit', compact('curso', 'niveis', 'eixos'))
+            : redirect()->route('curso.index')->with('error', 'Curso não encontrado');
     }
 
-    public function update(Request $request, string $id): View
+    public function update(Request $request, string $id): RedirectResponse
     {
         $request->validate($this->regrasValidacao, $this->mensagemErro);
 
         $curso = $this->find($id);
         if (isset($curso)) {
             $curso->update($request->all());
-            return view('curso.show', compact('curso'))->with('sucess', 'Curso atualizado com sucesso!');
+            return redirect()->route('curso.index')->with('sucess', 'Curso atualizado com sucesso!');
         }
-        return view('curso.edit')->with('error', 'Curso não encontrado');
+        return redirect()->route('curso.index')->with('error', 'Curso não encontrado');
     }
 
-    public function destroy(string $id): View
+    public function destroy(string $id): RedirectResponse
     {
         return ($this->find($id)->softDeletes())
-            ? view('curso.index')->with('sucess', 'Curso deletado com sucesso!')
-            : view('curso.index')->with('error', 'Falha ao deletar.');
+            ? redirect()->route('curso.index')->with('sucess', 'Curso deletado com sucesso!')
+            : redirect()->route('curso.index')->with('error', 'Falha ao deletar.');
     }
 
     private function find(int $id): object | null
