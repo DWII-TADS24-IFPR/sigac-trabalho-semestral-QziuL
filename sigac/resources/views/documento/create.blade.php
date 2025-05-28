@@ -1,32 +1,44 @@
-<div>
-    <form action="{{ route('documento.store') }}" method="post" enctype="multipart/form-data">
-        @csrf
+@extends('layouts.main')
 
-        <div>
-            <label for="descricao">Descrição</label>
-            <input type="text" name="descricao" id="descricao" required>
+@section('title', 'Solicitar horas')
+
+@section('content')
+    <div class="container-fluid px-4 mt-4 ">
+        <div class="card">
+            <div class="card-body">
+                <h2>Solicitar horas complementares</h2>
+                <form action="{{ route('documento.store') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+
+                    <div  class="mb-3">
+                        <label class="form-label" for="descricao">Descrição</label>
+                        <input class="form-control" type="text" name="descricao" id="descricao" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="horas_in">Horas solicitadas</label>
+                        <input class="form-control" type="number" name="horas_in" id="horas_in" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="categoria_id">Vincule uma categoria...</label>
+                        <select class="form-select mb-1" name="categoria_id" id="categoria_id" required>
+                            @foreach($categorias as $categoria)
+                                <option value="{{$categoria->id}}">{{ $categoria->nome }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"  for="documento">Certificado</label>
+                        <input class="form-select mb-1" type="file" name="documento" id="documento" required>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Enviar</button>
+                    <a class="btn btn-danger mt-2 text-decoration-none text-white" href="{{ route('documento.index') }}">
+                        Cancelar
+                    </a>
+                </form>
+            </div>
         </div>
-        <div>
-            <label for="horas_in">Horas solicitadas</label>
-            <input type="number" name="horas_in" id="horas_in" required>
-        </div>
-        <div>
-            <x-input-label for="categoria_id" :value="__('Categoria')" />
-            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    name="categoria_id" id="categoria_id" required>
-                @foreach($categorias as $categoria)
-                    <option value="{{$categoria->id}}">{{ $categoria->nome }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="documento">Certificado</label>
-            <input type="file" name="documento" id="documento" required>
-        </div>
-        <div>
-            <x-primary-button class="ms-4">
-                {{ __('Enviar') }}
-            </x-primary-button>
-        </div>
-    </form>
-</div>
+    </div>
+@endsection
