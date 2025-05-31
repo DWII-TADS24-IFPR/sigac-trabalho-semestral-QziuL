@@ -61,18 +61,20 @@
             <a href="{{ route('solicitacao.index') }}">Solicitações</a>
         @endif
         @if(!auth()->user()->is_admin)
-            <a href="{{ route('documento.index') }}">Horas Complementares</a>
-            <a href="#">Declarações</a>
+            <a class="inline-block w-full px-4 py-2" href="{{ route('documento.index') }}">Horas Complementares</a>
+            <a class="inline-block w-full px-4 py-2" href="#">Declarações</a>
         @endif
 
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}"
+              onsubmit="return confirm('Deseja realmete sair?');" >
             @csrf
 
-            <x-dropdown-link :href="route('logout')"
-                             onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                {{ __('Sair') }}
-            </x-dropdown-link>
+            <button class="btn" type="submit">
+                <a class="inline-block w-full px-4 py-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Sair
+                </a>
+            </button>
         </form>
     @endauth
 
