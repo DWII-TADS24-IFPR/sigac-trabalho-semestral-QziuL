@@ -24,7 +24,7 @@ class EixoController extends Controller
 
     public function __construct() { $this->repository = new EixoRepository(); }
 
-    public function index(): View | RedirectResponse
+    public function index(): View
     {
         // Se não tiver dados registrados, exibir na View dados nulos
         $eixos = $this->repository->selectAll();
@@ -63,13 +63,13 @@ class EixoController extends Controller
     {
         $eixo = $this->repository->findById($id);
         return ($eixo)
-            ? redirect()->view('eixo.edit', compact('eixo'))
+            ? view('eixo.edit', compact('eixo'))
             : redirect()->route('eixo.index')->with('error', 'Eixo não encontrado.');
     }
 
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, string $id): RedirectResponse
     {
-        $eixo = $this->repository->findById($id);
+        $eixo = $this->repository->findById(intval($id));
 
         if(isset($eixo)) {
             $eixo->setNome(mb_strtoupper($request->get('nome'), 'UTF-8'));
@@ -77,13 +77,13 @@ class EixoController extends Controller
             return redirect()->route('eixo.index')->with('success', 'Eixo atualizado com sucesso!');
         }
 
-        return redirect()->route('eixo.index')->with('error', 'Eixo não encontrado.');
+        return redirect()->route('eixo.index')->with('error', 'Erro ao atualizar Eixo.');
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(string $id): RedirectResponse
     {
-        return ($this->repository->delete($id))
-            ? redirect()->route('eixo.index')->with('sucess', 'Eixo deletado com sucesso!')
-            : redirect()->route('eixo.index')->with('error', 'Falha ao deletar.');
+        return ($this->repository->delete(intval($id)))
+            ? redirect()->route('eixo.index')->with('success', 'Eixo deletado com sucesso!')
+            : redirect()->route('eixo.index')->with('error', 'Falha ao deletar Eixo.');
     }
 }
