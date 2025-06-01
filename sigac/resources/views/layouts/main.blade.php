@@ -62,7 +62,7 @@
         @endif
         @if(!auth()->user()->is_admin)
             <a class="inline-block w-full px-4 py-2" href="{{ route('documento.index') }}">Horas Complementares</a>
-            <a class="inline-block w-full px-4 py-2" href="#">Declarações</a>
+            <a class="inline-block w-full px-4 py-2" href="{{ route('declaracao.index') }}">Declarações</a>
         @endif
 
         <form method="POST" action="{{ route('logout') }}"
