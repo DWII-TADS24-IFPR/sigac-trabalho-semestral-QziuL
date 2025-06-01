@@ -188,6 +188,11 @@
       <path value="$PROJECT_DIR$/sigac/vendor/symfony/event-dispatcher-contracts" />
       <path value="$PROJECT_DIR$/sigac/vendor/symfony/polyfill-intl-idn" />
       <path value="$PROJECT_DIR$/sigac/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/sigac/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/sigac/vendor/dompdf/php-font-lib" />
+      <path value="$PROJECT_DIR$/sigac/vendor/dompdf/php-svg-lib" />
+      <path value="$PROJECT_DIR$/sigac/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/sigac/vendor/sabberworm/php-css-parser" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
