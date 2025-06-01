@@ -57,7 +57,8 @@
             <a href="{{ route('curso.index') }}">Cursos</a>
             <a href="{{ route('nivel.index') }}">Niveis</a>
             <a href="{{ route('turma.index') }}">Turmas</a>
-            <a href="{{ route('comprovante.index') }}">Comprovantes</a>
+            <a href="{{ route('eixo.index') }}">Eixos</a>
+{{--            <a href="{{ route('comprovante.index') }}">Comprovantes</a>--}}
             <a href="{{ route('solicitacao.index') }}">Solicitações</a>
         @endif
         @if(!auth()->user()->is_admin)
