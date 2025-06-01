@@ -46,7 +46,17 @@
                                 <td>{{$documento->descricao}}</td>
                                 <td>{{$documento->horas_in}}</td>
                                 <td>{{($documento->status) ? 'Aprovado' : 'Pendente'}}</td>
-                                <td class="flex content-around ml-4">
+                                <td class="d-flex justify-content-around ml-4">
+                                    {{-- Ver documento --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('documento.show', $documento->id) }}" >
+                                        @csrf
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                    {{-- Editar documento --}}
                                     <form method="get"
                                           class="d-inline m-0 p-0"
                                           action="{{ route('documento.edit', $documento->id) }}" >
@@ -55,7 +65,7 @@
                                             <i class="fa fa-pencil" aria-hidden="true"></i>
                                         </button>
                                     </form>
-
+                                    {{-- Deletar documento --}}
                                     <form method="post" class="d-inline m-0 p-0"
                                           action="{{ route('documento.destroy', $documento->id) }}"
                                           onsubmit="return confirm('Tem certeza que deseja excluir?');" >
