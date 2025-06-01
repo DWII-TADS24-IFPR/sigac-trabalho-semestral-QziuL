@@ -6,6 +6,7 @@ use App\Http\Controllers\ComprovanteController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\DeclaracaoController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\EixoController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitacaoHorasController;
@@ -35,5 +36,6 @@ Route::resource('documento', DocumentoController::class);
 Route::resource('nivel', NivelController::class);
 Route::resource('turma', TurmaController::class);
 Route::resource('solicitacao', SolicitacaoHorasController::class);
+Route::resource('eixo', EixoController::class);
 
 require __DIR__.'/auth.php';
