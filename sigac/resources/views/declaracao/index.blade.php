@@ -21,56 +21,33 @@
         <div class="col-xl vh-100">
             <div class="card p-4 border-light mb-3">
                 <h4 class="text-center bg-black text-white rounded-top-5 p-2">Declarações</h4>
-                <a class="text-center fs-5 link-underline-info" href="{{ route('declaracao.create' )}}">
-                    Gerar declaracao
-                </a>
-                @if($declaracoes->isEmpty())
-                    <p class="text-center fs-5 mt-3">Não há declarações...</p>
-                @else
-                    <table class="table table-striped">
 
-                        <thead>
-                        <tr>
-                            <th scope="col">Data</th>
-                            <th scope="col">Aluno</th>
-                            <th scope="col">Comprovante ID</th>
-                            <th scope="col" class="text-center">Ação</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                <div class="card-body">
+                    @if($cursoConcluido)
+                        <div class="text-center">
+                            <h4>Parabéns, {{ $aluno->nome }}! </h4>
+                            <h4>Você alcançou as horas necessárias para formação do seu curso.</h4>
+                            <p>Horas necessárias: {{$cursoHoras}} horas</p>
+                            <p>Horas registradas: {{$alunoHoras}} horas</p>
+                            <form method="post" action="{{ route('declaracao.store') }}">
+                                @csrf
 
-                        @foreach($declaracoes as $declaracao)
-                            <tr>
-                                <td>{{$declaracao->data}}</td>
-                                <td>{{$declaracao->aluno->nome}}</td>
-                                <td>{{$declaracao->comprovante->id}}</td>
-                                <td class="d-flex justify-content-around">
-                                    <form method="get"
-                                          class="d-inline m-0 p-0"
-                                          action="{{ route('declaracao.edit', $declaracao->id) }}" >
-                                        @csrf
+                                <input hidden name="aluno-email" value="{{auth()->user()->email}}">
+                                <input hidden name="aluno-horas" value="{{$alunoHoras}}">
 
-                                        <button class="btn m-0 p-0" type="submit">
-                                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
-
-                                    <form method="post" class="d-inline m-0 p-0"
-                                          action="{{ route('declaracao.destroy', $declaracao->id) }}"
-                                          onsubmit="return confirm('Tem certeza que deseja excluir?');" >
-                                        @csrf
-
-                                        @method('delete')
-                                        <button class="btn m-0 p-0" type="submit">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                                <button class="btn btn-primary text-white">
+                                    Gerar declaração
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <h2>Você não pode gerar sua declaração.</h2>
+                        <p>Aluno: {{ $aluno->nome }}</p>
+                        <p>Curso: {{ $aluno->curso->nome }}</p>
+                        <p>Horas registradas: {{ $alunoHoras }}</p>
+                        <p>Horas necessárias: {{ $cursoHoras }}</p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
