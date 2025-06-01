@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Documento;
 use App\Models\User;
-use App\Repositories\AlunoRepository;
 use App\Repositories\CategoriaRepository;
 use App\Repositories\DocumentoRepository;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +15,7 @@ class DocumentoController extends Controller
 {
     private DocumentoRepository $repository;
     private CategoriaRepository $categoriaRepository;
-    private string $path = 'documentos/alunos';
+
     private array $regrasValidacao = [
         'descricao' => 'required|min:5|max:200',
         'horas_in' => 'required',
@@ -57,32 +56,29 @@ class DocumentoController extends Controller
         $categoria = $this->categoriaRepository->findById($request->get('categoria_id'));
         $user = User::find(Auth::id());
         if($request->file('documento') && isset($categoria) && isset($user)) {
-            // Registra a Solicitação
             $documento = new Documento();
             $documento->setDescricao(mb_strtoupper($request->get('descricao'), 'UTF-8'));
             $documento->setHorasIn($request->get('horas_in'));
             $documento->setStatus(false);
             $documento->categoria()->associate($categoria);
             $documento->user()->associate($user);
-            $id = $this->repository->saveAndReturnId($documento);
-            // Upload documento salvando em 'storage/app/private/public/documentos/alunos'
-            // altera nome do arquivo com ID do aluno e horario
+            // salva o arquivo em 'storage/app/public/documentos'
+            // alterando o nome com dados do ID do aluno e hora atual
             $extensao_arq = $request->file('documento')->getClientOriginalExtension();
-            $nome_arq = $id.'_'.time().'.'.$extensao_arq;
-            $path = $request->file('documento')->storeAs('public/documentos/alunos', $nome_arq);
-            $documento->setUrl($path);
+            $nome_arq = $user->id.'_'.time().'.'.$extensao_arq;
+            $pathSave = $request->file('documento')->storeAs('documentos', $nome_arq, 'public');
+            $documento->setUrl($pathSave);
             $this->repository->save($documento);
-            return redirect()->route('documento.index');
+            return redirect()->route('documento.index')->with('success', 'Documento cadastrado com sucesso.');
         }
 
-        return redirect()->route('documento.index');
+        return redirect()->route('documento.index')->with('error', 'Ocorreu um erro ao cadastrar o documento.');
     }
 
     public function show(string $id): View | RedirectResponse
     {
-        $documento = $this->repository->findById($id);
-
-        return ($documento)
+        $documento = $this->repository->findById(intval($id));
+        return (isset($documento))
             ? view('documento.show', compact('documento'))
             : redirect()->route('documento.index')->with('error', 'Documento não encontrado.');
     }
