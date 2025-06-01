@@ -30,11 +30,11 @@
 
                     <div class="mb-3">
                         <label class="form-label"  for="documento">Certificado</label>
-                        <input class="form-select mb-1" type="file" name="documento" id="documento" required>
+                        <input class="form-select mb-1" type="file" name="documento" id="documento" accept="application/pdf" required>
                     </div>
 
                     <button class="btn btn-primary" type="submit">Enviar</button>
-                    <a class="btn btn-danger mt-2 text-decoration-none text-white" href="{{ route('documento.index') }}">
+                    <a class="btn btn-secondary" href="{{ route('documento.index') }}">
                         Cancelar
                     </a>
                 </form>
