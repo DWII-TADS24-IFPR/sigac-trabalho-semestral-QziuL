@@ -25,17 +25,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::middleware('isAdmin')->group(function () {
+        Route::resource('aluno', AlunoController::class);
+        Route::resource('categoria', CategoriaController::class);
+        Route::resource('curso', CursoController::class);
+        Route::resource('nivel', NivelController::class);
+        Route::resource('turma', TurmaController::class);
+        Route::resource('eixo', EixoController::class);
+        Route::resource('solicitacao', SolicitacaoHorasController::class);
+    });
+
+//    Route::resource('comprovante', ComprovanteController::class);
+
+    Route::middleware('isAluno')->group(function () {
+        Route::resource('documento', DocumentoController::class);
+        Route::resource('declaracao', DeclaracaoController::class);
+    });
 });
 
-Route::resource('aluno', AlunoController::class);
-Route::resource('categoria', CategoriaController::class);
-Route::resource('comprovante', ComprovanteController::class);
-Route::resource('curso', CursoController::class);
-Route::resource('declaracao', DeclaracaoController::class);
-Route::resource('documento', DocumentoController::class);
-Route::resource('nivel', NivelController::class);
-Route::resource('turma', TurmaController::class);
-Route::resource('solicitacao', SolicitacaoHorasController::class);
-Route::resource('eixo', EixoController::class);
+
 
 require __DIR__.'/auth.php';

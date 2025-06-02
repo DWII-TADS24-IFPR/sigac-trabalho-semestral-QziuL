@@ -51,12 +51,12 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return !is_null($this->isAdmin());
+        return !is_null($this->is_admin);
     }
 
     public function isAluno(): bool
     {
-        return is_null($this->isAdmin());
+        return is_null($this->is_admin);
     }
 
     public function alunos(): HasMany
