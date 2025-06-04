@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             ],
             [
                 // ALUNO
-                "name" => "LUIZ ALUNO",
+                "name" => "LUIZ FERNANDO QUINHOLI",
                 "email" => "luiz.aluno@gmail.com",
                 "password" => bcrypt('123luiz123'),
                 "is_admin" => false,
