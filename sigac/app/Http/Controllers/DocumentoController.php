@@ -39,7 +39,7 @@ class DocumentoController extends Controller
 
     public function index(): View
     {
-        $documentos = $this->repository->selectAll();
+        $documentos = $this->repository->findByColumn('user_id', Auth::id());
         return view('documento.index', compact('documentos'));
     }
 
