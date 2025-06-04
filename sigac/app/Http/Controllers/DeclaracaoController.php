@@ -121,7 +121,7 @@ class DeclaracaoController extends Controller
 //            : view('declaracao.index')->with('error', 'Erro ao remover o declaracao.');
     }
 
-    private function totalDeHorasAluno($aluno): array
+    public function totalDeHorasAluno($aluno): array
     {
         $documentos = $this->documentoRepository->selectAll();
 
