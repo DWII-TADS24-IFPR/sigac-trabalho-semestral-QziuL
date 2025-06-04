@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Repositories\AlunoRepository;
 use App\Repositories\CursoRepository;
 use App\Repositories\TurmaRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -16,10 +17,11 @@ class AlunoController extends Controller
     private AlunoRepository $repository;
     private CursoRepository $cursoRepository;
     private TurmaRepository $turmaRepository;
+    private DeclaracaoController $declaracaoController;
     private array $regrasValidacao = [
         'name'      => 'required|string|min:4|max:255',
-        'email'     => 'required|string|email|max:255|unique:users|unique:alunos',
-        'cpf'       => 'required|string|min:11|max:11|unique:alunos',
+        'email'     => 'required|string|email|max:255',
+        'cpf'       => 'required|string|min:11|max:11',
         'password'  => 'min:6|string|max:255|confirmed',
         'turma'     => 'required',
         'curso'     => 'required',
@@ -37,6 +39,7 @@ class AlunoController extends Controller
         $this->repository = new AlunoRepository();
         $this->cursoRepository = new CursoRepository();
         $this->turmaRepository = new TurmaRepository();
+        $this->declaracaoController = new DeclaracaoController();
     }
 
     public function index(): View
@@ -50,12 +53,28 @@ class AlunoController extends Controller
     {
         $cursos = $this->cursoRepository->selectAll();
         $turmas = $this->turmaRepository->selectAll();
-        return view('auth.register', compact('cursos', 'turmas'));
+        return (auth()->user() == null)
+            ? view('auth.register', compact('cursos', 'turmas'))
+            : view('aluno.create', compact('cursos', 'turmas'));
     }
 
     public function store(Request $request)
     {
-        $request->validate($this->regrasValidacao, $this->mensagemErro);
+        $autenticado = (bool) auth()->user();
+
+        if($autenticado)
+        {
+            $request->validate([
+                'name'      => 'required|string|min:4|max:255',
+                'email'     => 'required|string|email|max:255',
+                'cpf'       => 'required|string|min:11|max:11',
+                'password'  => 'min:6|string|max:255',
+                'turma'     => 'required',
+                'curso'     => 'required',
+            ]);
+        } else {
+            $request->validate($this->regrasValidacao, $this->mensagemErro);
+        }
 
         $user = User::create([
             'name' => mb_strtoupper($request->get('name'), 'UTF-8'),
@@ -73,18 +92,22 @@ class AlunoController extends Controller
         $aluno->setUserId($user->id);
         $this->repository->save($aluno);
 
-        Auth::login($user);
+        if(!$autenticado){
+            Auth::login($user);
+            return redirect()->route('dashboard');
+        }
 
-        return redirect(route('dashboard', absolute: false));
-        //return redirect()->route('aluno.index')->with(['success' => 'Aluno cadastrado com sucesso!']);
+        return redirect()->route('aluno.index')->with(['success' => 'Aluno cadastrado com sucesso!']);
     }
 
-    public function show(string $id)
+    public function show(string $id): View | RedirectResponse
     {
-        $aluno = $this->find($id);
+        $aluno = $this->find(intval($id));
+        list($alunoHoras, $cursoHoras, $cursoConcluido) = $this->declaracaoController->totalDeHorasAluno($aluno);
+
         return ($aluno)
-            ?  view('aluno.show')->with('aluno', $aluno)
-            :  view('aluno.index')->with('error', 'Aluno inexistente.');
+            ?  view('aluno.show', compact('aluno', 'alunoHoras'))
+            :  redirect()->route('aluno.index')->with('error', 'Aluno inexistente.');
     }
 
     public function edit(int $id)
