@@ -60,9 +60,9 @@ class CategoriaController extends Controller
 
     }
 
-    public function show(int $id): View | RedirectResponse
+    public function show(string $id): View | RedirectResponse
     {
-        $categoria = $this->find($id);
+        $categoria = $this->find(intval($id));
 
         return (isset($categoria))
             ? view('categoria.show', compact('categoria'))

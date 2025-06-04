@@ -73,7 +73,7 @@ class CursoController extends Controller
 
     public function show(string $id): View | RedirectResponse
     {
-        $curso = $this->find($id);
+        $curso = $this->find(intval($id));
         return (isset($curso))
             ? view('curso.show', compact('curso'))
             : redirect()->back()->with('error', 'Curso não encontrado.');
