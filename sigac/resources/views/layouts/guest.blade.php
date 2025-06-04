@@ -17,9 +17,9 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
             <div>
-                <a href="/">
+                <a href="/" class="text-white text-decoration-none">
 {{--                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />--}}
-                    <h2>SIGAC</h2>
+                    <h2>Bem vindo ao SIGAC</h2>
                 </a>
             </div>
 
