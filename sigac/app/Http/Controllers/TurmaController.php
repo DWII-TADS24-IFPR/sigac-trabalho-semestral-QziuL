@@ -15,13 +15,13 @@ class TurmaController extends Controller
     private CursoRepository $cursoRepository;
 
     private array $regrasValidacao = [
-        'turma'      => 'required|min:4|max:255',
-        'curso_id'     => 'required|integer',
+        'ano'      => 'required|integer',
+        'curso_id'     => 'required',
     ];
 
     private array $mensagemErro = [
-        'turma.required' => 'O campo turma é obrigatório.',
-        'curso_id.required' => 'O campo curso_id é obrigatório.',
+        'ano.required' => 'O campo ano é obrigatório.',
+        'curso_id.required' => 'O campo curso é obrigatório.',
     ];
 
     public function __construct()
@@ -56,7 +56,8 @@ class TurmaController extends Controller
 
     public function show(string $id): View | RedirectResponse
     {
-        $turma = $this->repository->findById($id);
+        $turma = $this->repository->findById(intval($id));
+//        dd($turma->curso->alunos);
         return ($turma)
             ? view('turma.show', compact('turma'))
             : redirect()->route('turma.index')->with('error', 'Turma não encontrada.');
@@ -86,5 +87,19 @@ class TurmaController extends Controller
         return ($this->repository->delete($id))
             ? redirect()->route('turma.index')->with('sucess', 'Turma deletada com sucesso.')
             : redirect()->route('turma.index')->with('error', 'Falha ao deletar turma.');
+    }
+
+    public function getTurmasPorCurso(Request $request, string $cursoId)
+    {
+        $curso = $this->cursoRepository->findById(intval($cursoId));
+        if (!$curso) {
+            return response()->json(['error' => 'Curso não encontrado'], 404);
+        }
+
+        $turmas = $curso->turmas->map(function ($turma) {
+            return ['id' => $turma->id, 'nome' => $turma->ano];
+        });
+
+        return response()->json($turmas);
     }
 }

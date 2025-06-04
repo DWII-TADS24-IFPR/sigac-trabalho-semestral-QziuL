@@ -41,6 +41,23 @@
             margin-left: 220px;
             padding: 2rem;
         }
+
+        #selectTurmaContainer.hidden {
+            display: none;
+        }
+        .loader { /* Estilo simples para um indicador de carregamento */
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            display: none; /* Começa oculto */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="sb-nav-fixed">
@@ -95,5 +112,83 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+{{-- Script para cadastro de aluno --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectCurso = document.getElementById('selectCurso');
+        const selectTurma = document.getElementById('selectTurma');
+        const selectTurmaContainer = document.getElementById('selectTurmaContainer');
+        const turmaLoader = document.getElementById('turmaLoader'); // Pega o loader
+
+        selectCurso.addEventListener('change', function() {
+            const cursoId = this.value;
+
+            // Limpa select de turmas e o oculta enquanto carrega
+            selectTurma.innerHTML = '<option value="">-- Carregando turmas... --</option>';
+            if (!cursoId) { // Se "-- Selecione um Curso --" for escolhido
+                selectTurmaContainer.classList.add('hidden');
+                selectTurma.innerHTML = '<option value="">-- Selecione uma Turma --</option>';
+                return;
+            }
+
+            // Mostra o container e o loader
+            selectTurmaContainer.classList.remove('hidden');
+            turmaLoader.style.display = 'inline-block'; // Mostra o loader
+            selectTurma.disabled = true; // Desabilita o select enquanto carrega
+
+            // Monta a URL para a requisição AJAX usando a rota nomeada do Laravel
+            // A função 'route()' do Ziggy.js é uma boa opção se você usar,
+            // caso contrário, construa a URL manualmente ou passe-a via PHP.
+            // Para este exemplo, vamos construir manualmente (mas tenha cuidado com a baseURL):
+            // const url = `/buscar-turmas/${cursoId}`; // Simples, mas pode não ser ideal em subdiretórios
+
+            // Forma mais robusta de pegar a URL base caso não use Ziggy:
+            const baseUrl = "{{ url('/') }}"; // Pega a URL base da aplicação
+            const url = `${baseUrl}/buscar-turmas/${cursoId}`;
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', // Útil para o Laravel identificar como AJAX
+                    // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Não é necessário para GET, mas bom saber
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na rede ou resposta não OK: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    selectTurma.innerHTML = '<option value="">-- Selecione uma Turma --</option>'; // Placeholder
+
+                    if (data && data.length > 0) {
+                        data.forEach(function(turma) {
+                            const option = document.createElement('option');
+                            option.value = turma.id; // Usando o ID da turma como valor
+                            option.textContent = turma.nome; // Usando o nome da turma como texto
+                            selectTurma.appendChild(option);
+                        });
+                    } else if (data.error) {
+                        console.error('Erro do servidor:', data.error);
+                        selectTurma.innerHTML = '<option value="">-- Erro ao carregar turmas --</option>';
+                    }
+                    else {
+                        selectTurma.innerHTML = '<option value="">-- Nenhuma turma encontrada --</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro na requisição AJAX:', error);
+                    selectTurma.innerHTML = '<option value="">-- Falha ao buscar turmas --</option>';
+                    // Poderia adicionar uma mensagem de erro mais visível para o usuário aqui
+                })
+                .finally(() => {
+                    turmaLoader.style.display = 'none'; // Esconde o loader
+                    selectTurma.disabled = false; // Reabilita o select
+                });
+        });
+    });
+</script>
 </body>
 </html>
