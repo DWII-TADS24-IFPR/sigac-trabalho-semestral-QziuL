@@ -12,7 +12,7 @@ class AlunoSeeder extends Seeder
     {
         $data = [
             [
-                "nome" => "LUIZ ALUNO",
+                "nome" => "LUIZ FERNANDO QUINHOLI",
                 "cpf" => "00000000001",
                 "email" => "luiz.aluno@gmail.com",
                 "senha" => bcrypt('123luiz123'),
