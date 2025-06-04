@@ -27,15 +27,16 @@
                 @if($cursos->isEmpty())
                     <p class="text-center fs-5 mt-3">Não há cursos cadastrados...</p>
                 @else
-                    <table class="table table-striped">
+                    <table class="table table-striped table-responsive">
 
                         <thead>
                         <tr>
-                            <th scope="col">Nome</th>
+                            <th scope="col">ID</th>
+                            <th scope="col" class="w-50">Nome</th>
                             <th scope="col">Sigla</th>
-                            <th scope="col">Total de Horas</th>
+{{--                            <th scope="col">Horas</th>--}}
                             <th scope="col">Nível</th>
-                            <th scope="col">Eixo</th>
+{{--                            <th scope="col">Eixo</th>--}}
                             <th scope="col" class="text-center">Ação</th>
                         </tr>
                         </thead>
@@ -43,32 +44,41 @@
 
                         @foreach($cursos as $curso)
                             <tr>
+                                <td>{{$curso->id}}</td>
                                 <td>{{$curso->nome}}</td>
                                 <td>{{$curso->sigla}}</td>
-                                <td>{{$curso->total_horas}}</td>
+{{--                                <td>{{$curso->total_horas}}</td>--}}
                                 <td>{{$curso->nivel->nome}}</td>
-                                <td>{{$curso->eixo->nome}}</td>
-                                <td>
-                                    <div class="d-flex">
-                                        <form method="get"
-                                              class="d-inline m-0 p-0 mx-2"
-                                              action="{{ route('curso.edit', $curso->id) }}" >
-                                            @csrf
-                                            <button class="btn mx-2 p-0" type="submit">
-                                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                                            </button>
-                                        </form>
-
-                                        <form method="post" class="d-inline m-0 p-0"
-                                              action="{{ route('curso.destroy', $curso->id) }}"
-                                              onsubmit="return confirm('Tem certeza que deseja excluir?');" >
-                                            @csrf
-                                            @method('delete')
-                                            <button class="btn m-0 p-0" type="submit">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+{{--                                <td>{{$curso->eixo->nome}}</td>--}}
+                                <td class="d-flex justify-content-around py-4">
+                                    {{-- Editar curso --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('curso.edit', $curso->id) }}" >
+                                        @csrf
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                    {{-- Visualizar curso --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('curso.show', $curso->id) }}" >
+                                        @csrf
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                    {{-- Deletar curso --}}
+                                    <form method="post" class="d-inline m-0 p-0"
+                                          action="{{ route('curso.destroy', $curso->id) }}"
+                                          onsubmit="return confirm('Tem certeza que deseja excluir?');" >
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

@@ -45,6 +45,8 @@
                                 <td>{{$categoria->maximo_horas}}</td>
                                 <td>{{$categoria->curso->sigla}}</td>
                                 <td class="d-flex justify-content-around">
+
+                                    {{-- Editar categoria --}}
                                     <form method="get"
                                           class="d-inline m-0 p-0"
                                           action="{{ route('categoria.edit', $categoria->id) }}" >
@@ -54,6 +56,17 @@
                                         </button>
                                     </form>
 
+                                    {{-- Visualizar categoria --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('categoria.show', $categoria->id) }}" >
+                                        @csrf
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+
+                                    {{-- Deletar categoria --}}
                                     <form method="post" class="d-inline m-0 p-0"
                                           action="{{ route('categoria.destroy', $categoria->id) }}"
                                           onsubmit="return confirm('Tem certeza que deseja excluir?');" >
@@ -63,7 +76,6 @@
                                             <i class="fa fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach

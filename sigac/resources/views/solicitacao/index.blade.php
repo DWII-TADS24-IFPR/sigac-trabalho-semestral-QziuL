@@ -43,23 +43,28 @@
                                     <td>{{$documento->id}}</td>
                                     <td>{{$documento->descricao}}</td>
                                     <td>{{$documento->horas_in}}</td>
-                                    <td>{{($documento->user->nome)}}</td>
-                                    <td class="flex content-around ml-4">
+                                    <td>{{($documento->user->email)}}</td>
+                                    <td class="d-flex justify-content-around">
+                                        {{-- Aprovar --}}
                                         <form method="post" class="d-inline m-0 p-0"
-                                              action="{{ route('solicitacao.refused', $documento->id) }}" >
+                                              action="{{ route('solicitacao.update', $documento->id) }}">
+{{--                                              action="{{ route('solicitacao.approved', $documento->id) }}">--}}
                                             @csrf
+                                            @method('put')
 
-                                            <button class="btn m-0 p-0" type="submit">
-                                                <i class="fa-solid fa-ban" style="color: #000000;"></i>
-                                            </button>
-                                        </form>
-
-                                        <form method="post" class="d-inline m-0 p-0"
-                                              action="{{ route('solicitacao.approved', $documento->id) }}">
-                                            @csrf
-
+                                            <input hidden name="status" value="aprovado">
                                             <button class="btn m-0 p-0" type="submit">
                                                 <i class="fa-solid fa-thumbs-up" style="color: #000000;"></i>
+                                            </button>
+                                        </form>
+                                        {{-- Visualizar --}}
+                                        <form method="get" class="d-inline m-0 p-0"
+                                              action="{{ route('solicitacao.show', $documento->id) }}">
+{{--                                              action="{{ route('solicitacao.approved', $documento->id) }}">--}}
+                                            @csrf
+
+                                            <button class="btn m-0 p-0" type="submit">
+                                                <i class="fa-solid fa-eye" style="color: #000000;"></i>
                                             </button>
                                         </form>
                                     </td>

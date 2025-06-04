@@ -48,6 +48,7 @@
                                 <td>{{$aluno->curso->sigla}}</td>
                                 <td>{{$aluno->turma->ano}}</td>
                                 <td class="d-flex justify-content-around">
+                                    {{-- Editar aluno --}}
                                     <form method="get"
                                           class="d-inline m-0 p-0"
                                           action="{{ route('aluno.edit', $aluno->id) }}" >
@@ -56,7 +57,16 @@
                                             <i class="fa fa-pencil" aria-hidden="true"></i>
                                         </button>
                                     </form>
-
+                                    {{-- Visualizar aluno --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('aluno.show', $aluno->id) }}" >
+                                        @csrf
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                    {{-- Remover aluno --}}
                                     <form method="post" class="d-inline m-0 p-0"
                                           action="{{ route('aluno.destroy', $aluno->id) }}"
                                           onsubmit="return confirm('Tem certeza que deseja excluir?');" >

@@ -24,8 +24,27 @@ class SolicitacaoHorasController extends Controller
 
     public function index()
     {
-        $documentos = $this->documentoRepository->selectAll();
+        $documentos = $this->documentoRepository->findByColumn('status', 0);
         return view('solicitacao.index', compact('documentos'));
+    }
+
+    public function show(string $id)
+    {
+        $solicitacao = $this->documentoRepository->findById(intval($id));
+        return view('solicitacao.show', compact('solicitacao'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $solicitacao = $this->documentoRepository->findById(intval($id));
+        if($request->get('status') == 'aprovado')
+        {
+            $solicitacao->status = true;
+            $solicitacao->comentario = 'DEFERIDO';
+            $solicitacao->horas_out = $solicitacao->horas_in;
+            $solicitacao->save();
+        }
+        return redirect()->route('solicitacao.index')->with('success', 'Solicitação aprovada com sucesso!');
     }
 
     public function refused(string $id) {

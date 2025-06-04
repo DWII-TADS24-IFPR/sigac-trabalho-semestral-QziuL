@@ -53,7 +53,16 @@
                                             <i class="fa fa-pencil" aria-hidden="true"></i>
                                         </button>
                                     </form>
+                                    {{-- Visualizar turma --}}
+                                    <form method="get"
+                                          class="d-inline m-0 p-0"
+                                          action="{{ route('turma.show', $turma->id) }}" >
+                                        @csrf
 
+                                        <button class="btn m-0 p-0" type="submit">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
                                     <form method="post" class="d-inline m-0 p-0"
                                           action="{{ route('turma.destroy', $turma->id) }}"
                                           onsubmit="return confirm('Tem certeza que deseja excluir?');" >

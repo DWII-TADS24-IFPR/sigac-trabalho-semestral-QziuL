@@ -28,29 +28,40 @@
                     <p class="text-center fs-5 mt-3">Não há niveis de ensino cadastrados...</p>
                 @else
                     <table class="table table-striped">
-
                         <thead>
                         <tr>
+                            <th scope="col">ID</th>
                             <th scope="col">Nome</th>
-                            <th scope="col" class="text-center">Ação</th>
+                            <th scope="col" class="w-25 text-center" >Ação</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         @foreach($niveis as $nivel)
                             <tr>
-                                <td>{{$nivel->nome}}</td>
+                                <td>{{ $nivel->id }}</td>
+                                <td>{{ $nivel->nome }}</td>
                                 <td>
-                                    <div class="d-flex">
+                                    <div class="d-flex justify-content-around">
+                                        {{-- Editar nivel --}}
                                         <form method="get"
-                                              class="d-inline m-0 p-0 mx-2"
+                                              class="d-inline m-0 p-0"
                                               action="{{ route('nivel.edit', $nivel->id) }}" >
                                             @csrf
-                                            <button class="btn mx-2 p-0" type="submit">
+                                            <button class="btn m-0 p-0" type="submit">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </button>
                                         </form>
-
+                                        {{-- Visualizar nivel --}}
+                                        <form method="get"
+                                              class="d-inline m-0 p-0"
+                                              action="{{ route('nivel.show', $nivel->id) }}" >
+                                            @csrf
+                                            <button class="btn m-0 p-0" type="submit">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </form>
+                                        {{-- Deletar nivel --}}
                                         <form method="post" class="d-inline m-0 p-0"
                                               action="{{ route('nivel.destroy', $nivel->id) }}"
                                               onsubmit="return confirm('Tem certeza que deseja excluir?');" >
