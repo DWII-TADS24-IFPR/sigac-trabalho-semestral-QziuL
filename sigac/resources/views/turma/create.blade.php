@@ -25,8 +25,8 @@
                         <input class="form-control" type="number" name="ano" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="curso">Selecione um curso...</label>
-                        <select class="form-select mb-1" name="curso" required>
+                        <label class="form-label" for="curso_id">Selecione um curso...</label>
+                        <select class="form-select mb-1" name="curso_id" required>
                             @foreach($cursos as $curso)
                                 <option value="{{$curso->id}}">{{ $curso->nome }}</option>
                             @endforeach
@@ -34,7 +34,7 @@
                     </div>
 
                     <button class="btn btn-primary" type="submit">Criar</button>
-                    <a class="btn btn-danger mt-2 text-decoration-none text-white" href="{{ route('turma.index') }}">
+                    <a class="btn btn-secondary" href="{{ route('turma.index') }}">
                         Cancelar
                     </a>
                 </form>

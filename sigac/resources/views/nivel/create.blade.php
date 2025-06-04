@@ -25,7 +25,7 @@
                         <input class="form-control" type="text" name="nome" required>
                     </div>
                     <button class="btn btn-primary" type="submit">Criar</button>
-                    <a class="btn btn-danger mt-2 text-decoration-none text-white" href="{{ route('nivel.index') }}">
+                    <a class="btn btn-secondary" href="{{ route('nivel.index') }}">
                         Cancelar
                     </a>
                 </form>

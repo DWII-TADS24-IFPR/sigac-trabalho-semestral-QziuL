@@ -36,7 +36,7 @@
                         </select>
                     </div>
                     <button class="btn btn-primary" type="submit">Criar</button>
-                    <a class="btn btn-danger mt-2 text-decoration-none text-white"
+                    <a class="btn btn-secondary"
                        href="{{route('categoria.index')}}">
                         Cancelar
                     </a>
