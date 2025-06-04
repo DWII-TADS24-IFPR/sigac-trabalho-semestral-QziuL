@@ -7,15 +7,14 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AlunoController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [\App\Http\Controllers\AlunoController::class, 'create'])->name('register');
+    Route::get('register', [AlunoController::class, 'create'])->name('register');
 
-    Route::post('register', [\App\Http\Controllers\AlunoController::class, 'store']);
+    Route::post('register', [AlunoController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
